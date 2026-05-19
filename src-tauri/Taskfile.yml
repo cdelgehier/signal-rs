@@ -1,0 +1,18 @@
+version: '3'
+
+tasks:
+  test:
+    desc: Run Rust tests
+    cmds:
+      - cargo test --manifest-path Cargo.toml
+
+  lint:
+    desc: Lint Rust code
+    cmds:
+      - cargo fmt --manifest-path Cargo.toml -- --check
+      - cargo clippy --manifest-path Cargo.toml --all-targets -- -D warnings
+
+  upgrade:
+    desc: Update Rust dependencies
+    cmds:
+      - cargo update --manifest-path Cargo.toml

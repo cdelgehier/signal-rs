@@ -1,0 +1,33 @@
+version: '3'
+
+tasks:
+  install:
+    desc: Install frontend dependencies
+    cmds:
+      - npm install
+
+  test:
+    desc: Run frontend tests
+    cmds:
+      - npm run test
+
+  lint:
+    desc: TypeScript type check
+    cmds:
+      - npm run typecheck
+
+  up:
+    desc: Start Nuxt dev server
+    cmds:
+      - npm run dev
+
+  generate:
+    desc: Build static frontend for production
+    cmds:
+      - npm run generate
+
+  upgrade:
+    desc: Upgrade frontend dependencies
+    cmds:
+      - npx npm-check-updates -u
+      - npm install

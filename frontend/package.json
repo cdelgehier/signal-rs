@@ -1,0 +1,32 @@
+{
+  "name": "signal-rs-frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev --port 3000",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "nuxi typecheck"
+  },
+  "devDependencies": {
+    "@nuxt/ui": "^4.7.1",
+    "tailwindcss": "^4.0.0",
+    "@nuxt/test-utils": "^3.17.2",
+    "@types/node": "^22.0.0",
+    "@vue/test-utils": "^2.4.6",
+    "happy-dom": "^17.0.0",
+    "nuxt": "^4.4.6",
+    "playwright-core": "^1.52.0",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.6"
+  },
+  "overrides": {
+    "vitest": "^4.1.6"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.10.1",
+    "zod": "^4.4.3"
+  }
+}

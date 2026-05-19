@@ -1,0 +1,79 @@
+version: '3'
+
+includes:
+  frontend:
+    taskfile: ./frontend/Taskfile.yml
+    dir: ./frontend
+  backend:
+    taskfile: ./src-tauri/Taskfile.yml
+    dir: ./src-tauri
+
+tasks:
+  default:
+    desc: List all available tasks
+    silent: true
+    cmds:
+      - task --list
+
+  install:
+    desc: Install all dependencies (frontend + root)
+    deps: [frontend:install]
+    cmds:
+      - npm install
+
+  up:
+    aliases: [dev]
+    desc: Start the app in dev mode (Nuxt hot-reload + Tauri)
+    deps: [install]
+    cmds:
+      - task: _ensure-icons
+      - npx tauri dev
+
+  stop:
+    aliases: [down]
+    desc: Stop all dev processes
+    cmds:
+      - cmd: pkill -f "tauri dev" 2>/dev/null || true
+        platforms: [linux, darwin]
+
+  test:
+    desc: Run all tests (frontend + backend in parallel)
+    deps: [frontend:test, backend:test]
+
+  lint:
+    desc: Check all code (frontend + backend in parallel)
+    deps: [frontend:lint, backend:lint]
+
+  upgrade:
+    desc: Upgrade all dependencies
+    deps: [frontend:upgrade, backend:upgrade]
+
+  clean:
+    desc: Remove all build artifacts
+    cmds:
+      - cmd: rm -rf frontend/.nuxt frontend/.output frontend/node_modules frontend/.task
+        platforms: [linux, darwin]
+      - cmd: rm -rf src-tauri/target
+        platforms: [linux, darwin]
+      - cmd: rm -rf node_modules .task
+        platforms: [linux, darwin]
+
+  _ensure-icons:
+    internal: true
+    status:
+      - test -f src-tauri/icons/32x32.png
+    cmds:
+      - task: icons
+
+  icons:
+    desc: Regenerate all icon formats from src-tauri/icons/app-icon.png
+    cmds:
+      - npx tauri icon src-tauri/icons/app-icon.png
+
+  package:
+    desc: Build the full desktop app
+    cmds:
+      - npm install
+      - task: icons
+      - task: frontend:install
+      - npx tauri build
