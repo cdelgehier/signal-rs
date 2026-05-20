@@ -1,6 +1,6 @@
 [package]
 name = "signal-rs"
-version = "0.2.3"
+version = "0.3.0"
 description = "Signal desktop client built with Tauri and presage"
 authors = ["Delgehier Cédric"]
 edition = "2021"

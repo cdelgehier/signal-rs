@@ -1,3 +1,14 @@
+## v0.3.0 (2026-05-20)
+
+### Feat
+
+- **notifications**: show system notification on incoming message
+
+### Fix
+
+- **ci**: use vcpkg to install OpenSSL on Windows with dev headers
+- **messages**: resolve sender name and outgoing flag for DataMessage
+
 ## v0.2.3 (2026-05-20)
 
 ### Fix
