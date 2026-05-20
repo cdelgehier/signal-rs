@@ -231,6 +231,19 @@ async fn receive_loop(
                     }
                     Some(Received::Content(content)) => {
                         if let Some((channel_id, msg)) = content_to_message(&content) {
+                            // System notification for incoming messages
+                            if !msg.is_outgoing {
+                                if let Some(text) = &msg.text {
+                                    use tauri_plugin_notification::NotificationExt;
+                                    app_handle
+                                        .notification()
+                                        .builder()
+                                        .title(&msg.sender_name)
+                                        .body(text)
+                                        .show()
+                                        .ok();
+                                }
+                            }
                             app_handle.emit("message-received", (&channel_id, msg)).ok();
                         }
                     }

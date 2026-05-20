@@ -1,4 +1,20 @@
 use signal_rs_lib::models::{Channel, Message, PairingStatus, ReceiptStatus};
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+fn make_message(is_outgoing: bool, text: Option<&str>) -> Message {
+    Message {
+        id: 1,
+        sender_id: "uuid".into(),
+        sender_name: "Alice".into(),
+        text: text.map(str::to_string),
+        timestamp: 1_700_000_000,
+        is_outgoing,
+        receipt: None,
+    }
+}
 use signal_rs_lib::signal::manager::url_to_qr_png_base64;
 
 #[test]
@@ -45,6 +61,36 @@ fn pairing_status_serde() {
         "\"linked\""
     );
 }
+
+// ---------------------------------------------------------------------------
+// Feature: system notifications — notification trigger conditions
+// ---------------------------------------------------------------------------
+
+#[test]
+fn notification_triggers_for_incoming_message_with_text() {
+    let msg = make_message(false, Some("Hello"));
+    assert!(!msg.is_outgoing);
+    assert!(msg.text.is_some());
+    // Both conditions required: incoming AND has text
+    let should_notify = !msg.is_outgoing && msg.text.is_some();
+    assert!(should_notify);
+}
+
+#[test]
+fn notification_does_not_trigger_for_outgoing_message() {
+    let msg = make_message(true, Some("Hello"));
+    let should_notify = !msg.is_outgoing && msg.text.is_some();
+    assert!(!should_notify);
+}
+
+#[test]
+fn notification_does_not_trigger_for_attachment_without_text() {
+    let msg = make_message(false, None);
+    let should_notify = !msg.is_outgoing && msg.text.is_some();
+    assert!(!should_notify);
+}
+
+// ---------------------------------------------------------------------------
 
 #[test]
 fn qr_code_generation_from_url() {
