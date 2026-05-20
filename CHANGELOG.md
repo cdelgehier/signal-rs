@@ -1,3 +1,9 @@
+## v0.2.3 (2026-05-20)
+
+### Fix
+
+- **ci**: install OpenSSL on Windows for SQLcipher build
+
 ## v0.2.2 (2026-05-20)
 
 ### Fix
