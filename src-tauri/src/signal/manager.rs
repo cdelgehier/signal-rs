@@ -545,6 +545,26 @@ async fn fetch_messages(
     let service_id: ServiceId = Aci::from(uuid).into();
     let thread = Thread::Contact(service_id);
 
+    // My own UUID — local call, no network round-trip
+    let my_uuid = mgr.registration_data().service_ids.aci;
+
+    // Contact name for incoming messages (fallback to UUID string)
+    let service_id_for_lookup: ServiceId = Aci::from(uuid).into();
+    let contact_name: String = mgr
+        .store()
+        .contact_by_id(&service_id_for_lookup)
+        .await
+        .ok()
+        .flatten()
+        .map(|c| {
+            if c.name.is_empty() {
+                uuid.to_string()
+            } else {
+                c.name
+            }
+        })
+        .unwrap_or_else(|| uuid.to_string());
+
     let mut messages: Vec<Message> = mgr
         .store()
         .messages(&thread, ..)
@@ -552,9 +572,12 @@ async fn fetch_messages(
         .take(limit)
         .filter_map(|r| {
             let c = r.map_err(|e| error!("msg: {e}")).ok()?;
-            // SynchronizeMessage = sent from one of our own devices → outgoing
+            let sender_uuid = c.metadata.sender.raw_uuid();
+
             let (text, is_outgoing) = match &c.body {
-                ContentBody::DataMessage(dm) => (dm.body.clone(), false),
+                // DataMessage: outgoing if WE are the sender
+                ContentBody::DataMessage(dm) => (dm.body.clone(), sender_uuid == my_uuid),
+                // SynchronizeMessage: always outgoing (sent from one of our devices)
                 ContentBody::SynchronizeMessage(s) => {
                     let text = s
                         .sent
@@ -565,14 +588,14 @@ async fn fetch_messages(
                 }
                 _ => return None,
             };
-            let sender_id = c.metadata.sender.raw_uuid().to_string();
+
             Some(Message {
                 id: c.metadata.timestamp,
-                sender_id: sender_id.clone(),
+                sender_id: sender_uuid.to_string(),
                 sender_name: if is_outgoing {
                     "Me".to_string()
                 } else {
-                    sender_id
+                    contact_name.clone()
                 },
                 text,
                 timestamp: c.metadata.timestamp as i64,
