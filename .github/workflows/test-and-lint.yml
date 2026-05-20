@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Install Tauri Linux system deps
+      - name: Install system deps
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -33,10 +33,13 @@ jobs:
             libayatana-appindicator3-dev \
             librsvg2-dev \
             patchelf \
-            libssl-dev
+            libssl-dev \
+            protobuf-compiler
 
       - name: Install go-task
         uses: arduino/setup-task@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run tests
         run: task test
