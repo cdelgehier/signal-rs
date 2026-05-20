@@ -1,3 +1,9 @@
+## v0.2.2 (2026-05-20)
+
+### Fix
+
+- **ci**: add protoc and authenticate setup-task to fix build failures
+
 ## v0.2.1 (2026-05-19)
 
 ### Fix
